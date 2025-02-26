@@ -1,36 +1,48 @@
 import React, { useEffect, useState } from "react";
 import ErrorPage from "./ErrorPage";
+import {
+  useAddAdminMutation,
+  useLoginMutation,
+} from "../../app/services/authApi";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = ({ setLor }) => {
-  const [logindata, setLogindata] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
+  const [addAdmin] = useAddAdminMutation();
+  const [login, { isLoading, isError }] = useLoginMutation();
+  const [logindata, setLogindata] = useState({ userName: "", password: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLogindata((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // if (logindata.username && logindata.password) {
-    //   login(logindata);
-    // } else {
-    //   alert("Username and password cannot be empty");
-    // }
+    if (logindata.userName && logindata.password) {
+      console.log(logindata);
+      try {
+        const response = await login(logindata).unwrap();
+        console.log(response);
+        if (response && response.token && response.role) {
+          localStorage.setItem("token", response.token);
+          localStorage.setItem("role", response.role);
+          window.location.reload();
+        }
+        if (localStorage.getItem("token")) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.log("login is failed :", error);
+      }
+    } else {
+      alert("Username and password cannot be empty");
+    }
   };
 
-  // useEffect(() => {
-  //   if (data) {
-  //     dispatch(setAuth(data));
-  //     localStorage.setItem("token", data.token);
-  //     localStorage.setItem("userid", data.idofuser);
-  //     localStorage.setItem("role", data.role);
-  //     navigate("/");
-  //     window.location.reload();
-  //   }
-  // }, [data, dispatch, navigate]);
-
-  const isError = false;
-  const isLoading = false;
+  useEffect(() => {
+    addAdmin();
+  }, []);
   return (
     <div className="min-h-screen flex flex-col gap-4 items-center justify-center bg-gradient-to-br from-gray-800 via-gray-900 to-black p-4">
       {/* Page Header */}
@@ -57,16 +69,16 @@ const LoginPage = ({ setLor }) => {
         )}
 
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleLogin}
           className="flex flex-col items-center space-y-4"
         >
           <div className="space-y-3">
             <input
               type="text"
-              name="username"
-              value={logindata.username}
+              name="userName"
+              value={logindata.userName}
               onChange={handleChange}
-              placeholder="Enter username"
+              placeholder="Enter user name"
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
             />
             <input

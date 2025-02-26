@@ -1,81 +1,105 @@
-import React, { useState } from "react";
-import List from "../../../components/List";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useSubmittaskMutation } from "../../../app/services/submissionApi";
+import { useParams } from "react-router-dom";
 
 const SubmitTask = () => {
-  const [regData, setRegData] = useState({
-    username: "",
-    email: "",
-    password: "",
+  const params = useParams();
+  const userId = useSelector((state) => state?.app?.profile?.userId);
+  const [submitTask, { isLoading, error }] = useSubmittaskMutation();
+
+  const [taskData, setTaskData] = useState({
+    userId: "", // Ensuring it doesn't start as undefined
+    taskId: "", // Ensuring it doesn't start as undefined
+    githubLink: "",
   });
 
+  // Update userId and taskId once they're available
+  useEffect(() => {
+    setTaskData((prev) => ({
+      ...prev,
+      userId: userId || "",
+      taskId: params?.taskId || "",
+    }));
+  }, [userId, params?.taskId]);
+
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegData((prev) => ({ ...prev, [name]: value }));
+    setTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRegister = (e) => {
+  // Handle form submission
+  const handleSubmitTask = async (e) => {
     e.preventDefault();
-    // if (regData.username && regData.password && regData.email) {
-    //   register(regData);
-    //   navigate("/login");
-    //   window.location.reload();
-    // }
+
+    console.log("Submitting Task Data:", taskData); // Debugging API payload
+
+    if (!taskData.taskId || !taskData.githubLink) {
+      alert("Please fill all fields!");
+      return;
+    }
+
+    try {
+      await submitTask(taskData);
+      alert("Task Submitted Successfully!");
+      setTaskData({ taskId: "", githubLink: "", userId: userId });
+    } catch (err) {
+      console.error("Error submitting task:", err);
+      alert("Failed to submit task.");
+    }
   };
 
   return (
-    <div className="h-[41rem] w-30rem flex justify-center items-center gap-4 p-4 bg-gradient-to-br from-gray-800 via-gray-900 to-black ">
-      {/* form */}
-      <div className="max-w-md p-10 shadow-xl bg-slate-300 bg-gradient-to-br from-gray-700 to-gray-900 min-h-[32rem]">
+    <div className="h-[41rem] w-30rem flex justify-center items-center gap-4 p-4 bg-gradient-to-br from-gray-800 via-gray-900 to-black">
+      <div className="max-w-md p-10 shadow-xl bg-gradient-to-br from-gray-700 to-gray-900 text-white">
         <div className="text-center mb-6">
-          <h1 className="text-2xl md:text-4xl font-extrabold mb-4 text-white-800">
+          <h1 className="text-2xl md:text-4xl font-extrabold mb-4">
             Submit Task
           </h1>
-          <p className="text-gray-400">submit to the admin </p>
+          <p className="text-gray-400">Submit completed task details</p>
         </div>
 
-        {/* Form Inputs */}
-        <form className="space-y-4" onSubmit={handleRegister}>
-          <div className="inputs space-y-3">
+        <form className="space-y-4" onSubmit={handleSubmitTask}>
+          <div className="space-y-3">
             <input
               type="text"
-              name="taskname"
-              value={regData.username}
+              name="taskId"
+              value={taskData.taskId || ""}
               onChange={handleChange}
-              placeholder="Task Name "
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
+              placeholder="Task ID"
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
             <input
               type="text"
-              name="userid"
-              value={regData.username}
-              onChange={handleChange}
-              placeholder="User Id "
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
+              value={taskData.userId || ""}
+              disabled
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none bg-gray-500 text-white cursor-not-allowed"
             />
             <input
               type="text"
-              name="taskid"
-              value={regData.username}
+              name="githubLink"
+              value={taskData.githubLink}
               onChange={handleChange}
-              placeholder="Task Id "
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
+              placeholder="GitHub Link"
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
           </div>
 
-          <div className="bg-red-700 text-white rounded-4xl text-center w-[10rem] text-xl">
-            <button className="p-2">ASIGN</button>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-red-700 text-white rounded-lg px-6 py-2 text-xl"
+            >
+              {isLoading ? "Submitting..." : "Submit Task"}
+            </button>
           </div>
         </form>
-      </div>
-
-      {/* user list */}
-      <div
-        className="w-[20rem] min-h-[32rem]  max-h-[32rem] shadow-xl bg-slate-300 
-      p-2 space-y-3 bg-gradient-to-br from-gray-700 to-gray-900 overflow-scroll "
-      >
-        {[1, 2, 3, 4, 5, 6, 7, 8].map(() => {
-          return <List box="task" />;
-        })}
+        {error && (
+          <p className="text-red-500 text-center mt-2">
+            Error submitting task.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RegisterPage from "./pages/Auth/Register";
 import LoginPage from "./pages/Auth/Login";
 import Home from "./pages/Home/Home";
 const App = () => {
-  const [token, setToken] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
   const [lor, setLor] = useState(false);
-  const [person, setPerson] = useState("USER");
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token") || "");
+    setRole(localStorage.getItem("role") || "");
+  }, []);
+
   return (
     <div>
       {token ? (
-        <Home person={person} />
+        <Home role={role} />
       ) : lor ? (
         <LoginPage setLor={setLor} />
       ) : (

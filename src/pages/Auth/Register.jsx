@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useRegisterMutation } from "../../app/services/authApi";
 
 const RegisterPage = ({ setLor }) => {
+  const [register] = useRegisterMutation();
+  const [cpassword, serCpassword] = useState("");
   const [regData, setRegData] = useState({
-    username: "",
-    email: "",
+    userName: "",
     password: "",
   });
 
@@ -11,14 +13,24 @@ const RegisterPage = ({ setLor }) => {
     const { name, value } = e.target;
     setRegData((prev) => ({ ...prev, [name]: value }));
   };
-
-  const handleRegister = (e) => {
+  const passwordVarify = () => {
+    return regData.password === cpassword;
+  };
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // if (regData.username && regData.password && regData.email) {
-    //   register(regData);
-    //   navigate("/login");
-    //   window.location.reload();
-    // }
+    if (regData.userName && passwordVarify()) {
+      console.log(regData, cpassword, passwordVarify());
+
+      try {
+        const response = await register(regData).unwrap(); // ✅ Properly await response
+        console.log(response);
+        setLor((p) => !p); //
+      } catch (error) {
+        console.error("Registration failed:", error);
+      }
+    } else {
+      alert("Check password again");
+    }
   };
 
   return (
@@ -49,18 +61,10 @@ const RegisterPage = ({ setLor }) => {
           <div className="space-y-3">
             <input
               type="text"
-              name="username"
-              value={regData.username}
+              name="userName"
+              value={regData.userName}
               onChange={handleChange}
               placeholder="Enter username "
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
-            />
-            <input
-              type="email"
-              name="email"
-              value={regData.email}
-              onChange={handleChange}
-              placeholder="Enter email"
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
             />
             <input
@@ -69,6 +73,14 @@ const RegisterPage = ({ setLor }) => {
               value={regData.password}
               onChange={handleChange}
               placeholder="Enter password"
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-100 placeholder:caret-blue-50"
+            />
+            <input
+              type="password"
+              name="cpassword"
+              value={cpassword}
+              onChange={(e) => serCpassword(e.target.value)}
+              placeholder="Re Enter the Password"
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500
               text-blue-100 placeholder:caret-blue-100"
             />

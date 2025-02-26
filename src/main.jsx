@@ -9,6 +9,10 @@ import AllTasks from "./pages/Home/Tasks/AllTasks.jsx";
 import SubmitTask from "./pages/Home/Tasks/SubmitTask.jsx";
 import CompletedTasks from "./pages/Home/Tasks/CompletedTasks.jsx";
 import SubmittedTasks from "./pages/Home/Tasks/SubmittedTasks.jsx";
+import { Provider } from "react-redux";
+import { store } from "./app/store.js";
+import CreateTask from "./pages/Home/Tasks/CreateTask.jsx";
+import AssignedTasks from "./pages/Home/Tasks/AssignedTasks.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,7 +31,7 @@ const router = createBrowserRouter([
         element: <MyTasks />,
       },
       {
-        path: "/assigntask",
+        path: "/assigntask/:taskId?",
         element: <AsignTask />,
       },
       {
@@ -36,21 +40,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/completedtasks",
-        element: <CompletedTasks submitORapprove={"submit"} />,
+        element: <CompletedTasks />,
       },
       {
         path: "/submittedtasks",
-        element: <SubmittedTasks submitORapprove={"approve"} />,
+        element: <SubmittedTasks />,
       },
       {
-        path: "/submittask",
+        path: "/submittask/:taskId?",
         element: <SubmitTask />,
+      },
+      {
+        path: "/createtask",
+        element: <CreateTask />,
+      },
+      {
+        path: "/assignedtasks",
+        element: <AssignedTasks />,
       },
     ],
   },
 ]);
 createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router}>
-    <App />
-  </RouterProvider>
+  <Provider store={store}>
+    <RouterProvider router={router}>
+      <App />
+    </RouterProvider>
+  </Provider>
 );
