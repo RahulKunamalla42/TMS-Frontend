@@ -4,15 +4,16 @@ import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Welcome from "./pages/Home/Welcome.jsx";
 import MyTasks from "./pages/Home/Tasks/SubmitTask.jsx";
-import AsignTask from "./pages/Home/Tasks/AsignTask.jsx";
 import AllTasks from "./pages/Home/Tasks/AllTasks.jsx";
 import SubmitTask from "./pages/Home/Tasks/SubmitTask.jsx";
 import CompletedTasks from "./pages/Home/Tasks/CompletedTasks.jsx";
 import SubmittedTasks from "./pages/Home/Tasks/SubmittedTasks.jsx";
 import { Provider } from "react-redux";
-import { store } from "./app/store.js";
+import { persistor, store } from "./app/store.js";
 import CreateTask from "./pages/Home/Tasks/CreateTask.jsx";
 import AssignedTasks from "./pages/Home/Tasks/AssignedTasks.jsx";
+import AssignTask from "./pages/Home/Tasks/AssignTask.jsx";
+import { PersistGate } from "redux-persist/integration/react";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/assigntask/:taskId?",
-        element: <AsignTask />,
+        element: <AssignTask />,
       },
       {
         path: "/alltasks",
@@ -63,8 +64,10 @@ const router = createBrowserRouter([
 ]);
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <RouterProvider router={router}>
-      <App />
-    </RouterProvider>
+    <PersistGate loading={null} persistor={persistor}>
+      <RouterProvider router={router}>
+        <App />
+      </RouterProvider>
+    </PersistGate>
   </Provider>
 );

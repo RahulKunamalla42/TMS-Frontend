@@ -5,23 +5,14 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/user",
     credentials: "include",
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
-      console.log(token);
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().app.token;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
       headers.set("Content-Type", "application/json");
 
       return headers;
-    },
-    responseHandler: async (response) => {
-      if (!response.ok && response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        window.location.href = "/login"; // Redirect user to login
-      }
-      return response.json();
     },
   }),
   endpoints: (build) => ({

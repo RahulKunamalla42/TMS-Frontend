@@ -1,10 +1,12 @@
 import React from "react";
 import AvatarComponent from "../../components/AvatarComponent";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { removetoken } from "../../app/feature/appSlice";
 
 const LeftSide = ({ role }) => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const navButs = {
     b1: "HOME",
     b2: role === "ADMIN" ? "ALL TASKS" : "ASSIGNED TASKS",
@@ -70,8 +72,10 @@ const LeftSide = ({ role }) => {
             <button
               className="p-2"
               onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("role");
+                dispatch(removetoken());
+
+                // localStorage.removeItem("token");
+                // localStorage.removeItem("role");
                 window.location.reload();
               }}
             >

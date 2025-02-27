@@ -5,11 +5,6 @@ const Task = ({ role, task }) => {
   const navigate = useNavigate();
   function handleAssign(task) {
     navigate(`/assigntask/${task?.taskId}`);
-    window.location.reload();
-  }
-  function handleSubmit(task) {
-    navigate(`/submittask/${task?.taskId}`);
-    window.location.reload();
   }
   return (
     <div className="border-2 border-blue-500 shadow-xl w-full h-[7rem] p-4 bg-gray-900 text-white">
@@ -24,12 +19,7 @@ const Task = ({ role, task }) => {
             assign
           </button>
         ) : (
-          <button
-            className="cursor-pointer bg-blue-900 px-4 rounded-3xl text-sm"
-            onClick={() => handleSubmit(task)}
-          >
-            submit
-          </button>
+          <span>Finished</span>
         )}
       </div>
       <p className="overflow-hidden text-gray-300">{task?.description}</p>

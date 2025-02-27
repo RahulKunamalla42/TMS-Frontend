@@ -6,9 +6,7 @@ import { useSelector } from "react-redux";
 const AllTasks = () => {
   // Corrected API hook usage
   const role = useSelector((state) => state.app.profile?.role);
-  console.log(role);
   const { data: alltasks, isLoading, isError } = useGetAllTasksQuery();
-  console.log(alltasks);
   const tasks = alltasks?.filter((task) => task.asignedUserId === null);
 
   return (

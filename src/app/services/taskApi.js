@@ -5,9 +5,12 @@ export const taskApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/task/",
     credentials: "include",
-    prepareHeaders: (Headers) => {
-      const token = localStorage.getItem("token");
-      Headers.set("Authorization", `Bearer ${token}`);
+    prepareHeaders: (Headers, { getState }) => {
+      // const token = localStorage.getItem("token");
+      const token = getState().app.token;
+      if (token) {
+        Headers.set("Authorization", `Bearer ${token}`);
+      }
       Headers.set("Content-Type", "application/json");
       return Headers;
     },

@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
-import ErrorPage from "./ErrorPage";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   useAddAdminMutation,
   useLoginMutation,
 } from "../../app/services/authApi";
-import { useNavigate } from "react-router-dom";
+import ErrorPage from "./ErrorPage";
+import { addToken } from "../../app/feature/appSlice";
 
 const LoginPage = ({ setLor }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // ✅ Redux dispatch
   const [addAdmin] = useAddAdminMutation();
   const [login, { isLoading, isError }] = useLoginMutation();
   const [logindata, setLogindata] = useState({ userName: "", password: "" });
+
+  useEffect(() => {
+    addAdmin();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,30 +26,23 @@ const LoginPage = ({ setLor }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (logindata.userName && logindata.password) {
-      console.log(logindata);
-      try {
-        const response = await login(logindata).unwrap();
-        console.log(response);
-        if (response && response.token && response.role) {
-          localStorage.setItem("token", response.token);
-          localStorage.setItem("role", response.role);
-          window.location.reload();
-        }
-        if (localStorage.getItem("token")) {
-          navigate("/");
-        }
-      } catch (error) {
-        console.log("login is failed :", error);
-      }
-    } else {
+    if (!logindata.userName || !logindata.password) {
       alert("Username and password cannot be empty");
+      return;
+    }
+
+    try {
+      const response = await login(logindata).unwrap();
+
+      if (response?.token) {
+        dispatch(addToken(response.token));
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
     }
   };
 
-  useEffect(() => {
-    addAdmin();
-  }, []);
   return (
     <div className="min-h-screen flex flex-col gap-4 items-center justify-center bg-gradient-to-br from-gray-800 via-gray-900 to-black p-4">
       {/* Page Header */}
@@ -92,8 +92,7 @@ const LoginPage = ({ setLor }) => {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-blue-600 p-2 
-              rounded-4xl w-[20rem] text-lg text-white"
+                className="bg-blue-600 p-2 rounded-4xl w-[20rem] text-lg text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Logging in..." : "Login"}
@@ -101,6 +100,7 @@ const LoginPage = ({ setLor }) => {
             </div>
           </div>
         </form>
+
         <div className="text-center mt-6">
           <p className="text-gray-400 text-sm sm:text-base">
             Don’t have an account?{" "}

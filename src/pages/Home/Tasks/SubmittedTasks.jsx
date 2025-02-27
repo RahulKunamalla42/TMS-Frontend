@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Task from "../../../components/Task";
 import { useGetallsubsQuery } from "../../../app/services/submissionApi";
 import SubmittedTask from "../../../components/SubmittedTask";
 
 const SubmittedTasks = () => {
   const { data: subtasks, isLoading, isError } = useGetallsubsQuery();
-  console.log(subtasks);
   return (
     <div className="p-4 sm:p-6">
       <div className="space-y-6">

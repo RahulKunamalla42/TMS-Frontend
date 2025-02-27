@@ -2,20 +2,16 @@ import React, { useEffect, useState } from "react";
 import List from "../../../components/List";
 import { useGetAllProfilesQuery } from "../../../app/services/authApi";
 import { useAssigntaskMutation } from "../../../app/services/taskApi";
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-const AsignTask = () => {
+const AssignTask = () => {
   const [profiles, setProfiles] = useState([]);
   const { data: allprofiles, isLoading, isError } = useGetAllProfilesQuery();
   const [assigntask] = useAssigntaskMutation();
 
   const params = useParams();
-  console.log(params);
-
   useEffect(() => {
     setProfiles(allprofiles?.filter((profile) => profile?.role != "ADMIN"));
-    console.log(profiles);
   }, [allprofiles, params]);
 
   const [assignData, setAssignData] = useState({
@@ -108,4 +104,4 @@ const AsignTask = () => {
   );
 };
 
-export default AsignTask;
+export default AssignTask;

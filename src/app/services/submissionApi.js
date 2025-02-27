@@ -5,8 +5,8 @@ export const submissionApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/submission",
     credentials: "include",
-    prepareHeaders: (Headers) => {
-      const token = localStorage.getItem("token");
+    prepareHeaders: (Headers, { getState }) => {
+      const token = getState().app.token;
       Headers.set("Authorization", token);
       Headers.set("Content-Type", "application/json");
       return Headers;

@@ -7,7 +7,6 @@ const CompletedTasks = () => {
   const role = useSelector((state) => state?.app?.profile?.role);
   const { data: tasks, isLoading, isError } = useGetAllTasksQuery();
 
-  // Filter only completed tasks
   const completedTasks = tasks?.filter((task) => task.status === "DONE") || [];
 
   return (

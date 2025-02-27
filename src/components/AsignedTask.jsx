@@ -1,9 +1,11 @@
 import React from "react";
 import { useCompletetaskMutation } from "../app/services/taskApi";
+import { useSubmittaskMutation } from "../app/services/submissionApi";
+import { useNavigate } from "react-router-dom";
 
 const AsignedTask = ({ task }) => {
+  const navigate = useNavigate();
   const [completetask] = useCompletetaskMutation();
-
   const handleClick = async (task) => {
     if (!task?.taskId) {
       console.error("Task ID is missing!");
@@ -20,7 +22,7 @@ const AsignedTask = ({ task }) => {
       const response = await completetask({ taskid: task.taskId }).unwrap();
       alert("Task marked as completed successfully!");
       console.log("Completion Response:", response);
-      window.location.reload();
+      navigate(`/submittask/${task.taskId}`);
     } catch (error) {
       console.error("Error completing task:", error);
       alert("Failed to mark task as completed.");

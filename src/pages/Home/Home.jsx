@@ -10,18 +10,13 @@ const Home = ({ role }) => {
   const userId = useSelector((state) => state.app.userId);
   const [getProfile, { error, isLoading }] = useLazyGetProfileQuery();
 
-  console.log("Redux Store userId:", userId);
-
   useEffect(() => {
     const fetchProfile = async () => {
       const response = await getProfile();
-      console.log("Fetched Profile Data:", response?.data);
 
       if (response?.data?.userId) {
         dispatch(addUserId(response.data.userId));
         dispatch(addProfile(response.data));
-        console.log("UserId Stored in Redux:", response.data.userId);
-        console.log("profile Stored in Redux:", response.data);
       }
     };
 
